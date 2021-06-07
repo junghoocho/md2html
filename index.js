@@ -32,7 +32,7 @@ let template_file = argv['t'];
 // setup markdown parser
 const MarkdownIt = require('markdown-it');
 const mdParser = new MarkdownIt(markdownItOptions);
-mdParser.use(require('markdown-it-attrs'));
+mdParser.use(require('markdown-it-decorate'));
 if (argv['n']) { // syntax highlight for notes
     mdParser.use(require('markdown-it-highlightjs'));
 }
@@ -81,6 +81,17 @@ try {
 </html>`;
 }
 
+//
+// preprocess markdown input before passing it to the markdown-it parser
+//
+
+// TODO: The standard markdown-it-decorate does not work realiably when it comes to li^3: syntax. Instead of going back up the ancenstry hierarchy, it sometimes go to its previous siblings if they have the same tag. We will have to completely rewrite the code if we want to use it. TODO
+
+// add <!-- ... --> to attributes to make the input compatible with markdown-it-decorator
+let attrRe = /\{(([a-z0-9]+)(\^[0-9]*)?: ?)?(((\.|#)?[a-z0-9A-Z\-_]+)(=(("([^\"\\]|\\.)*")|('([^\'\\]|\\.)*')))?\s*)+\}/g;
+markdown = markdown.replace(attrRe, "<!-- $& -->");
+
+// process the markdown using markdown-it parser
 let output = "";
 if (argv['n']) {
     // insert rendered notes to the HTML template
