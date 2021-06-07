@@ -70,7 +70,9 @@ module.exports = (md, opts) => {
     for (let i = 0, l = token.attrs.length; i < l; i++) {
       const prop  = token.attrs[i][0];
       const value = token.attrs[i][1];
-      result += ' ' + escapeHtml(prop) + '="' + (prop === 'href' ? value : escapeHtml(value)) + '"';
+      // skip embedding email links
+      if (prop === 'href') continue;
+      result += ' ' + escapeHtml(prop) + '="' + escapeHtml(value) + '"';
     }
 
     return result;
