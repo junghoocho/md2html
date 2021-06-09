@@ -16,10 +16,11 @@ const markdownItOptions = {
 // get command line parameters
 const argv = require('minimist')(process.argv.slice(2));
 if (argv['h']) {
-    console.log("Usage: md2html [-n] [-t template_file] [-i input_file] [-o output_file]");
+    console.log("Usage: md2html [-n] [-s name=value] [-t template_file] [-i input_file] [-o output_file]");
     console.log("  Convert markdown into reveal.js HTML slides");
     console.log("Options:");
     console.log("  -n: Generate notes not slides");
+    console.log("  -s name=value: Substitute {{name}} with value")
     console.log("  -t template_file: HTML template file to use");
     console.log("  -i input_file: Markdown input file (default: stdin)");
     console.log("  -o output_file: HTML output file (default: stdout)");
@@ -79,6 +80,18 @@ try {
 <!-- MARKDOWN_SLIDES -->
     </body>
 </html>`;
+}
+
+// perform variable substitution in the markdown input
+if (argv['s']) {
+    let regex = /([a-zA-Z][a-zA-Z0-9_\-]*)=(.*)/;
+    substitutions = (argv['s'] instanceof Array) ? argv['s'] : [ argv['s'] ];
+    for (let substitution of substitutions) {
+        let match = regex.exec(substitution);
+        if (match !== null) {
+            markdown = markdown.replaceAll(`{{${match[1]}}}`, match[2]);
+        }
+    }
 }
 
 let output = "";
