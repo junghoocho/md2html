@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack"
+    "build": "webpack && echo '#!/usr/bin/env node' > build/md2html && cat build/md2html.js >> build/md2html && chmod a+x build/md2html"
   },
   "keywords": [],
   "author": "",
